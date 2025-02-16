@@ -8,6 +8,7 @@ import {
   findMostPlayedArtist,
   calculateListeningTime,
   findFridayNightSongs,
+  findLongestStreakSong,
 } from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
@@ -45,6 +46,14 @@ function onUserSelected(userId) {
       fridayNightSong
         ? `Most played song on Friday night: ${fridayNightSong.song_id} (${fridayNightSong.count} times)`
         : "No songs were played on Friday night."
+    );
+
+    // Find the longest streak song
+    const longestStreak = findLongestStreakSong(userData);
+    console.log(
+      longestStreak
+        ? `Longest streak song: ${longestStreak.song_id} (${longestStreak.streak} times in a row)`
+        : "No streak song found."
     );
   }
 }

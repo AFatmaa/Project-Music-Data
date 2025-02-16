@@ -78,3 +78,37 @@ export function findFridayNightSongs(events) {
     ? { song_id: mostPlayedFridayNight[0], count: mostPlayedFridayNight[1] }
     : null;
 }
+
+export function findLongestStreakSong(events) {
+  if (!events || events.length === 0) return null;
+
+  let longestStreakSong = null;
+  let longestStreak = 0;
+  let currentStreakSong = null;
+  let currentStreak = 0;
+
+  events.forEach((event) => {
+    if (event.song_id === currentStreakSong) {
+      currentStreak++; // Increase streak if the same song is repeated
+    } else {
+      // Check if the last streak was the longest
+      if (currentStreak > longestStreak) {
+        longestStreak = currentStreak;
+        longestStreakSong = currentStreakSong;
+      }
+      // Reset streak
+      currentStreakSong = event.song_id;
+      currentStreak = 1;
+    }
+  });
+
+  // Final check in case the longest streak is at the end
+  if (currentStreak > longestStreak) {
+    longestStreak = currentStreak;
+    longestStreakSong = currentStreakSong;
+  }
+
+  return longestStreakSong
+    ? { song_id: longestStreakSong, streak: longestStreak }
+    : null;
+}
