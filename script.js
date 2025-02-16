@@ -7,6 +7,7 @@ import {
   findMostPlayedSong,
   findMostPlayedArtist,
   calculateListeningTime,
+  findFridayNightSongs,
 } from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
@@ -37,6 +38,14 @@ function onUserSelected(userId) {
     // Calculate total listening time
     const listeningTime = calculateListeningTime(userData);
     console.log("Total listening time per song:", listeningTime);
+
+    // Find most played song on Friday nights
+    const fridayNightSong = findFridayNightSongs(userData);
+    console.log(
+      fridayNightSong
+        ? `Most played song on Friday night: ${fridayNightSong.song_id} (${fridayNightSong.count} times)`
+        : "No songs were played on Friday night."
+    );
   }
 }
 

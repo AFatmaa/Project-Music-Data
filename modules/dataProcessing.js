@@ -52,3 +52,29 @@ export function calculateListeningTime(events) {
 
   return songTime;
 }
+
+export function findFridayNightSongs(events) {
+  if (!events || events.length === 0) return null;
+
+  let songCounts = {};
+
+  events.forEach((event) => {
+    const eventDate = new Date(event.timestamp);
+    const day = eventDate.getDay(); // 5 = Friday
+    const hours = eventDate.getHours(); // Get hour of the event
+
+    // Check if it's between Friday 17:00 and Saturday 04:00
+    if ((day === 5 && hours >= 17) || (day === 6 && hours < 4)) {
+      songCounts[event.song_id] = (songCounts[event.song_id] || 0) + 1;
+    }
+  });
+
+  // Sort and return the most played song on Friday nights
+  const mostPlayedFridayNight = Object.entries(songCounts).sort(
+    (a, b) => b[1] - a[1]
+  )[0];
+
+  return mostPlayedFridayNight
+    ? { song_id: mostPlayedFridayNight[0], count: mostPlayedFridayNight[1] }
+    : null;
+}
