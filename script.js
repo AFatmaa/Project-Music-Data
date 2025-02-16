@@ -9,6 +9,7 @@ import {
   calculateListeningTime,
   findFridayNightSongs,
   findLongestStreakSong,
+  findEveryDaySongs,
 } from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
@@ -55,6 +56,14 @@ function onUserSelected(userId) {
         ? `Longest streak song: ${longestStreak.song_id} (${longestStreak.streak} times in a row)`
         : "No streak song found."
     );
+
+    // Find the everyday songs
+    const everyDaySongs = findEveryDaySongs(userData);
+    if (everyDaySongs) {
+      console.log(`Every day songs for User ${userId}:`, everyDaySongs);
+    } else {
+      console.log(`No song was listened to every day for User ${userId}.`);
+    }
   }
 }
 

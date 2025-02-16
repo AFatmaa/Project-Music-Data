@@ -112,3 +112,29 @@ export function findLongestStreakSong(events) {
     ? { song_id: longestStreakSong, streak: longestStreak }
     : null;
 }
+
+export function findEveryDaySongs(events) {
+  if (!events || events.length === 0) return null;
+
+  let songDaysMap = {}; // Track which days each song was played
+  let allDays = new Set(); // Track all unique days the user listened to music
+
+  // Step 1: Store all days the user listened to any song
+  events.forEach((event) => {
+    const day = new Date(event.timestamp).toISOString().split("T")[0];
+
+    allDays.add(day); // Add the day to the set of all listening days
+
+    if (!songDaysMap[event.song_id]) {
+      songDaysMap[event.song_id] = new Set();
+    }
+    songDaysMap[event.song_id].add(day);
+  });
+
+  // Step 2: Find songs played on every single day
+  let everyDaySongs = Object.entries(songDaysMap)
+    .filter(([_, days]) => days.size === allDays.size)
+    .map(([song]) => song);
+
+  return everyDaySongs.length > 0 ? everyDaySongs : null;
+}
