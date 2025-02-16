@@ -1,12 +1,23 @@
-// This is a placeholder file which shows how you can access functions defined in other files.
-// It can be loaded into index.html.
-// You can delete the contents of the file once you have understood how it works.
-// Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
-// You can't open the index.html file using a file:// URL.
+import {
+  populateUserDropdown,
+  handleUserSelection,
+} from "./modules/userSelection.js";
+import { getListenEvents } from "./data.js";
 
-import { getUserIDs } from "./data.js";
+// Function to handle user selection and fetch data
+function onUserSelected(userId) {
+  const userData = getListenEvents(userId);
 
-window.onload = function () {
-  const users = getUserIDs();
-  document.querySelector("body").innerText = `There are ${users.length} users`;
-};
+  if (userData.length === 0) {
+    console.log(`User ${userId} has no listening history.`);
+  } else {
+    console.log(`User ${userId} listening data:`, userData);
+    // Here you will later call the UI rendering function
+  }
+}
+
+// Run functions when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+  populateUserDropdown(); // Populate dropdown
+  handleUserSelection(onUserSelected); // Handle selection
+});
