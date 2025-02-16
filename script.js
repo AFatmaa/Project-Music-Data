@@ -3,7 +3,10 @@ import {
   handleUserSelection,
 } from "./modules/userSelection.js";
 import { getListenEvents } from "./data.js";
-import { findMostPlayedSong } from "./modules/dataProcessing.js";
+import {
+  findMostPlayedSong,
+  findMostPlayedArtist,
+} from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
 function onUserSelected(userId) {
@@ -21,6 +24,14 @@ function onUserSelected(userId) {
       console.log(`Most played song for User ${userId}:`, mostPlayedSong);
     } else {
       console.log(`No most played song found for User ${userId}.`);
+    }
+
+    // Find the most played artist
+    const mostPlayedArtist = findMostPlayedArtist(userData);
+    if (mostPlayedArtist) {
+      console.log(`Most played artist for User ${userId}:`, mostPlayedArtist);
+    } else {
+      console.log(`No most played artist found for User ${userId}.`);
     }
   }
 }
