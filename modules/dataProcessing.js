@@ -36,3 +36,19 @@ export function findMostPlayedArtist(events) {
     ? { artist: mostPlayedArtist[0], count: mostPlayedArtist[1] }
     : null;
 }
+
+export function calculateListeningTime(events) {
+  if (!events || events.length === 0) return null;
+
+  let songTime = {};
+
+  events.forEach((event) => {
+    const song = getSong(event.song_id);
+    if (song) {
+      songTime[song.title] =
+        (songTime[song.title] || 0) + song.duration_seconds;
+    }
+  });
+
+  return songTime;
+}

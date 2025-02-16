@@ -6,6 +6,7 @@ import { getListenEvents } from "./data.js";
 import {
   findMostPlayedSong,
   findMostPlayedArtist,
+  calculateListeningTime,
 } from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
@@ -19,20 +20,23 @@ function onUserSelected(userId) {
 
     // Find the most played song
     const mostPlayedSong = findMostPlayedSong(userData);
-
-    if (mostPlayedSong) {
-      console.log(`Most played song for User ${userId}:`, mostPlayedSong);
-    } else {
-      console.log(`No most played song found for User ${userId}.`);
-    }
+    console.log(
+      mostPlayedSong
+        ? `Most played song: ${mostPlayedSong.song_id} (${mostPlayedSong.count} times)`
+        : "No most played song found."
+    );
 
     // Find the most played artist
     const mostPlayedArtist = findMostPlayedArtist(userData);
-    if (mostPlayedArtist) {
-      console.log(`Most played artist for User ${userId}:`, mostPlayedArtist);
-    } else {
-      console.log(`No most played artist found for User ${userId}.`);
-    }
+    console.log(
+      mostPlayedArtist
+        ? `Most played artist: ${mostPlayedArtist.artist} (${mostPlayedArtist.count} times)`
+        : "No most played artist found."
+    );
+
+    // Calculate total listening time
+    const listeningTime = calculateListeningTime(userData);
+    console.log("Total listening time per song:", listeningTime);
   }
 }
 
