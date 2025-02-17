@@ -37,7 +37,7 @@ export function findMostPlayedArtist(events) {
     : null;
 }
 
-export function calculateListeningTime(events) {
+export function calculateListeningTimeBySong(events) {
   if (!events || events.length === 0) return null;
 
   let songTime = {};
@@ -45,12 +45,28 @@ export function calculateListeningTime(events) {
   events.forEach((event) => {
     const song = getSong(event.song_id);
     if (song) {
-      songTime[song.title] =
-        (songTime[song.title] || 0) + song.duration_seconds;
+      const songKey = `${song.artist} - ${song.title}`;
+      songTime[songKey] = (songTime[songKey] || 0) + song.duration_seconds;
     }
   });
 
   return songTime;
+}
+
+export function calculateListeningTimeByArtist(events) {
+  if (!events || events.length === 0) return null;
+
+  let artistTime = {};
+
+  events.forEach((event) => {
+    const song = getSong(event.song_id);
+    if (song) {
+      artistTime[song.artist] =
+        (artistTime[song.artist] || 0) + song.duration_seconds;
+    }
+  });
+
+  return artistTime;
 }
 
 export function findFridayNightSongs(events) {
@@ -64,7 +80,7 @@ export function findFridayNightSongs(events) {
     const hours = eventDate.getHours(); // Get hour of the event
 
     // Check if it's between Friday 17:00 and Saturday 04:00
-    if ((day === 5 && hours >= 17) || (day === 6 && hours < 4)) {
+    if ((day === 5 && hours >= 17) || (day === 6 && hours <= 4)) {
       songCounts[event.song_id] = (songCounts[event.song_id] || 0) + 1;
     }
   });
@@ -77,6 +93,28 @@ export function findFridayNightSongs(events) {
   return mostPlayedFridayNight
     ? { song_id: mostPlayedFridayNight[0], count: mostPlayedFridayNight[1] }
     : null;
+}
+
+export function calculateFridayNightListeningTime(events) {
+  if (!events || events.length === 0) return null;
+
+  let songTime = {};
+
+  events.forEach((event) => {
+    const eventDate = new Date(event.timestamp);
+    const day = eventDate.getDay(); // 5 = Friday
+    const hours = eventDate.getHours(); // Get hour of the event
+
+    if ((day === 5 && hours >= 17) || (day === 6 && hours <= 4)) {
+      const song = getSong(event.song_id);
+      if (song) {
+        const songKey = `${song.artist} - ${song.title}`;
+        songTime[songKey] = (songTime[songKey] || 0) + song.duration_seconds;
+      }
+    }
+  });
+
+  return songTime;
 }
 
 export function findLongestStreakSong(events) {
