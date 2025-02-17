@@ -10,6 +10,7 @@ import {
   findFridayNightSongs,
   findLongestStreakSong,
   findEveryDaySongs,
+  findTopGenres,
 } from "./modules/dataProcessing.js";
 
 // Function to handle user selection and fetch data
@@ -64,6 +65,16 @@ function onUserSelected(userId) {
     } else {
       console.log(`No song was listened to every day for User ${userId}.`);
     }
+
+    // Find the top genres
+    const topGenres = findTopGenres(userData);
+    console.log(
+      topGenres
+        ? `${topGenres.label} for User ${userId}: ${topGenres.genres.join(
+            ", "
+          )}`
+        : `No genres found for User ${userId}.`
+    );
   }
 }
 

@@ -138,3 +138,36 @@ export function findEveryDaySongs(events) {
 
   return everyDaySongs.length > 0 ? everyDaySongs : null;
 }
+
+export function findTopGenres(events) {
+  if (!events || events.length === 0) return null;
+
+  let genreCounts = {};
+
+  // Count occurrences of each genre
+  events.forEach((event) => {
+    const song = getSong(event.song_id);
+    if (song) {
+      genreCounts[song.genre] = (genreCounts[song.genre] || 0) + 1;
+    }
+  });
+
+  // Convert to array, sort by count (descending order)
+  let sortedGenres = Object.entries(genreCounts)
+    .sort((a, b) => b[1] - a[1]) // Sort genres by most played
+    .map(([genre]) => genre); // Extract genre names only
+
+  // Select the top genres based on count
+  let topGenres;
+  if (sortedGenres.length >= 3) {
+    topGenres = sortedGenres.slice(0, 3); // Take top 3 if available
+  } else {
+    topGenres = sortedGenres; // Otherwise, take all available genres
+  }
+
+  // Format the result correctly
+  let label =
+    topGenres.length === 1 ? "Top genre" : `Top ${topGenres.length} genres`;
+
+  return { label, genres: topGenres };
+}
