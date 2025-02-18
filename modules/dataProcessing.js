@@ -28,9 +28,7 @@ export function findMostPlayedArtist(events) {
   });
 
   // Sort artists by count and return the most played one
-  const mostPlayedArtist = Object.entries(artistCounts).sort(
-    (a, b) => b[1] - a[1]
-  )[0];
+  const mostPlayedArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
 
   return mostPlayedArtist
     ? { artist: mostPlayedArtist[0], count: mostPlayedArtist[1] }
@@ -80,15 +78,13 @@ export function findFridayNightSongs(events) {
     const hours = eventDate.getHours(); // Get hour of the event
 
     // Check if it's between Friday 17:00 and Saturday 04:00
-    if ((day === 5 && hours >= 17) || (day === 6 && hours <= 4)) {
+    if ((day === 5 && hours >= 17) || (day === 6 && hours < 4)) {
       songCounts[event.song_id] = (songCounts[event.song_id] || 0) + 1;
     }
   });
 
   // Sort and return the most played song on Friday nights
-  const mostPlayedFridayNight = Object.entries(songCounts).sort(
-    (a, b) => b[1] - a[1]
-  )[0];
+  const mostPlayedFridayNight = Object.entries(songCounts).sort((a, b) => b[1] - a[1])[0];
 
   return mostPlayedFridayNight
     ? { song_id: mostPlayedFridayNight[0], count: mostPlayedFridayNight[1] }
@@ -105,7 +101,7 @@ export function calculateFridayNightListeningTime(events) {
     const day = eventDate.getDay(); // 5 = Friday
     const hours = eventDate.getHours(); // Get hour of the event
 
-    if ((day === 5 && hours >= 17) || (day === 6 && hours <= 4)) {
+    if ((day === 5 && hours >= 17) || (day === 6 && hours < 4)) {
       const song = getSong(event.song_id);
       if (song) {
         const songKey = `${song.artist} - ${song.title}`;
@@ -151,30 +147,41 @@ export function findLongestStreakSong(events) {
     : null;
 }
 
-export function findEveryDaySongs(events) {
-  if (!events || events.length === 0) return null;
+export function findEveryDaySongs(listenEvents, songsData) {
+    if (listenEvents.length === 0) return [];
 
-  let songDaysMap = {}; // Track which days each song was played
-  let allDays = new Set(); // Track all unique days the user listened to music
+    // Sort events chronologically by timestamp
+    listenEvents.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  // Step 1: Store all days the user listened to any song
-  events.forEach((event) => {
-    const day = new Date(event.timestamp).toISOString().split("T")[0];
+    // Determine the first and last day of user activity (normalized to midnight)
+    const startDate  = new Date(listenEvents[0].timestamp).setHours(0, 0, 0, 0);
+    const endDate  = new Date(listenEvents[listenEvents.length - 1].timestamp).setHours(0, 0, 0, 0);
+  
+    const songDays = {}; // Store which dates each song was played
 
-    allDays.add(day); // Add the day to the set of all listening days
+    listenEvents.forEach(event => {
+        const songID = event.song_id;
+        const eventDate = new Date(event.timestamp).setHours(0, 0, 0, 0); // Normalize to midnight
 
-    if (!songDaysMap[event.song_id]) {
-      songDaysMap[event.song_id] = new Set();
-    }
-    songDaysMap[event.song_id].add(day);
-  });
+        if (!songDays[songID]) songDays[songID] = new Set();
+        songDays[songID].add(eventDate);
+    });
 
-  // Step 2: Find songs played on every single day
-  let everyDaySongs = Object.entries(songDaysMap)
-    .filter(([_, days]) => days.size === allDays.size)
-    .map(([song]) => song);
+    // Calculate the total number of days between first and last listening day
+    const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
-  return everyDaySongs.length > 0 ? everyDaySongs : null;
+    // Find songs that were played on every single day
+    const everyDaySong = Object.keys(songDays)
+        .filter(songID => songDays[songID].size === totalDays)
+        .map(songID => {
+            const song = songsData[songID];
+            return {
+                title: song.title,
+                artist: song.artist,
+            };
+        });
+        
+    return everyDaySong;
 }
 
 export function findTopGenres(events) {
