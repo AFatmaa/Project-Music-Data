@@ -1,5 +1,5 @@
 // uiRendering.js
-export function updateResultsUI(userId, results) {
+export function updateResultsUI(results) {
   const userDataDiv = document.getElementById("user-data");
 
   if (!userDataDiv) {
