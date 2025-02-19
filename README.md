@@ -17,6 +17,12 @@ It provides insights into listening habits based on historical data.
   - Top genres based on listening habits.
 - Fully accessible UI with keyboard navigation and screen reader support.
 
+## 🌍 Deployment
+
+This project is deployed on **Netlify** and is automatically updated with each GitHub commit.
+
+🔗 **Live Demo:** [Music Data Project](https://music-data-project.netlify.app/)
+
 ## 🛠️ Project Structure
 
 This project follows a **modular approach** for better scalability and maintainability.
@@ -26,15 +32,27 @@ This project follows a **modular approach** for better scalability and maintaina
 To get started with the project, follow these steps:
 
 1️⃣ **Clone the repository**
+
+```bash
 git clone https://github.com/AFatmaa/Project-Music-Data.git
 cd Project-Music-Data
+```
 
-## 🌍 Deployment (To Be Updated)
+2️⃣ **Install dependencies**
 
-This project will be deployed using GitHub Pages or Netlify.
-🔗 Deployment link: (To be added later)
+```bash
+npm install
+```
 
-## 🧪 Testing (To Be Updated)
+## 🧪 Testing
+
+This project includes unit tests for key data-processing functions using Jest.
+
+🔹 Run tests:
+
+```bash
+npm test
+```
 
 ## 🙌 Contributors
 
