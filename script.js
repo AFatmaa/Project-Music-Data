@@ -1,104 +1,46 @@
 import {populateUserDropdown, handleUserSelection,} from "./modules/userSelection.js";
 import { getListenEvents, getSong } from "./data.js";
-import {findMostPlayedSong, findMostPlayedArtist, findFridayNightSongs, findLongestStreakSong, findEveryDaySongs, findTopGenres, calculateListeningTimeBySong,calculateListeningTimeByArtist,calculateFridayNightListeningTime, } from "./modules/dataProcessing.js";
+import {
+  findMostPlayedSong, 
+  findMostPlayedSongTime,
+  findMostPlayedArtist, 
+  findMostPlayedArtistTime,
+  findFridayNightSong, 
+  findFridayNightSongTime,
+  findLongestStreakSong, 
+  findEveryDaySongs, 
+  findTopGenres, 
+} from "./modules/dataProcessing.js";
 import { updateResultsUI } from "./modules/uiRendering.js";
 
 // Function to handle user selection and fetch data
 function onUserSelected(userId) {
   const userData = getListenEvents(userId);
 
+  // Clear UI if the selected user has no data to prevent showing previous user's results
   if (!userData || userData.length === 0) {
-    console.log(`User ${userId} has no listening history.`);
-    updateResultsUI(userId, {}); // Pass empty object to trigger "no data" message
+    updateResultsUI({}); // Pass empty object to trigger "no data" message
     return;
   }
 
-  // Find the most played song (count)
   const mostPlayedSong = findMostPlayedSong(userData);
-  console.log(mostPlayedSong ? `Most listened song (count): ${getSong(mostPlayedSong.song_id).artist} - ${getSong(mostPlayedSong.song_id).title}`: "No most played song found.");
-
-  // Calculate total listening time
-  const listeningTimeData = calculateListeningTimeBySong(userData);
-
-  // Find the most listened song (time)
-  const mostPlayedSongTime = Object.entries(listeningTimeData).reduce((max, [songKey, time]) => (time > max.time 
-    ? { songKey, time } : max), { songKey: null, time: 0 });
-
-  console.log(
-    mostPlayedSongTime.songKey
-      ? `Most listened song (time): ${mostPlayedSongTime.songKey}`
-      : "No data available for most listened song (time)."
-  );
-
-  // Find the most played artist
+  const listeningTimeData = findMostPlayedSongTime(userData);
+  const mostPlayedSongTime = Object.entries(listeningTimeData)
+    .reduce((max, [songKey, time]) => (time > max.time ? { songKey, time } : max), 
+    { songKey: null, time: 0 });
   const mostPlayedArtist = findMostPlayedArtist(userData);
-  console.log(
-    mostPlayedArtist
-      ? `Most listened artist (count): ${mostPlayedArtist.artist} `
-      : "No most played artist found."
-  );
-
-  // Calculate total listening time by artist
-  const listeningTimeByArtist = calculateListeningTimeByArtist(userData);
-
-  // Find the most listened artist (time)
-  let mostPlayedArtistTime = Object.entries(listeningTimeByArtist).reduce(
-    (max, [artist, time]) => (time > max.time ? { artist, time } : max),
-    { artist: null, time: 0 }
-  );
-
-  console.log(
-    mostPlayedArtistTime.artist
-      ? `Most listened artist (time): ${mostPlayedArtistTime.artist}`
-      : "No data available for most listened artist (time)."
-  );
-
-  // Find most played song on Friday nights
-  const fridayNightSong = findFridayNightSongs(userData);
-  console.log(
-    fridayNightSong
-      ? `Friday night song (count): ${getSong(fridayNightSong.song_id).artist} - ${getSong(fridayNightSong.song_id).title}`
-      : "No songs were played on Friday night."
-  );
-
-  // Calculate total listening time for Friday night songs
-  const fridayNightTimeData = calculateFridayNightListeningTime(userData);
-
-  // Find the most listened song on Friday night
-  let fridayNightSongTime = Object.entries(fridayNightTimeData).reduce(
-    (max, [songKey, time]) => (time > max.time ? { songKey, time } : max),
-    { songKey: null, time: 0 }
-  );
-
-  console.log(
-    fridayNightSongTime.songKey
-      ? `Friday night song (time): ${fridayNightSongTime.songKey}`
-      : "No data available for Friday night song (time)."
-  );
-
-  // Find the longest streak song
-  const longestStreak = findLongestStreakSong(userData);
-  console.log(
-    longestStreak
-      ? `Longest streak song: ${getSong(longestStreak.song_id).artist} - ${getSong(longestStreak.song_id).title} (length:${longestStreak.streak})`
-      : "No streak song found."
-  );
-
-  // Find the everyday songs
+  const listeningTimeByArtist = findMostPlayedArtistTime(userData);
+  const mostPlayedArtistTime = Object.entries(listeningTimeByArtist)
+    .reduce((max, [artist, time]) => (time > max.time ? { artist, time } : max),
+    { artist: null, time: 0 });
+  const fridayNightSong = findFridayNightSong(userData);
+  const fridayNightTimeData = findFridayNightSongTime(userData);
+  const fridayNightSongTime = Object.entries(fridayNightTimeData)
+    .reduce((max, [songKey, time]) => (time > max.time ? { songKey, time } : max),
+    { songKey: null, time: 0 });
+  const longestStreakSong = findLongestStreakSong(userData);
   const everyDaySongs = findEveryDaySongs(userData);
-  if (everyDaySongs && everyDaySongs.length > 0) {
-    const songDetails = everyDaySongs.map((songId) => {
-      const song = getSong(songId);
-      return song ? `${song.artist} - ${song.title}` : "Unknown Song";
-    });
-    console.log(`Every day songs: ${songDetails.join(", ")}`);
-  } else {
-    console.log(`No song was listened to every day for User ${userId}.`);
-  }
-
-  // Find the top genres
   const topGenres = findTopGenres(userData);
-  console.log(topGenres ? `${topGenres.label}: ${topGenres.genres.join(", ")}`: `No genres found for User ${userId}.`);
 
   // Prepare data to send to UI
   const results = {
@@ -111,8 +53,8 @@ function onUserSelected(userId) {
       ? `${getSong(fridayNightSong.song_id).artist} - ${getSong(fridayNightSong.song_id).title}` : "",
     "Friday night song (time)": fridayNightSongTime.songKey
       ? `${fridayNightSongTime.songKey}` : "",
-    "Longest streak song": longestStreak
-      ? `${getSong(longestStreak.song_id).artist} - ${getSong(longestStreak.song_id).title} (length:${longestStreak.streak})` : "",
+    "Longest streak song": longestStreakSong
+      ? `${getSong(longestStreakSong.song_id).artist} - ${getSong(longestStreakSong.song_id).title} (length:${longestStreakSong.streak})` : "",
     "Every day songs": everyDaySongs
       ? everyDaySongs.map(songId => `${getSong(songId).artist} - ${getSong(songId).title}`).join(", ") 
       : "", 
@@ -120,7 +62,7 @@ function onUserSelected(userId) {
   };
 
   // Update UI
-  updateResultsUI(userId, results);
+  updateResultsUI(results);
 
 }
 

@@ -15,6 +15,22 @@ export function findMostPlayedSong(events) {
   return mostPlayed ? { song_id: mostPlayed[0], count: mostPlayed[1] } : null;
 }
 
+export function findMostPlayedSongTime(events) {
+  if (!events || events.length === 0) return null;
+
+  let songTime = {};
+
+  events.forEach((event) => {
+    const song = getSong(event.song_id);
+    if (song) {
+      const songKey = `${song.artist} - ${song.title}`;
+      songTime[songKey] = (songTime[songKey] || 0) + song.duration_seconds;
+    }
+  });
+
+  return songTime;
+}
+
 export function findMostPlayedArtist(events) {
   if (!events || events.length === 0) return null;
 
@@ -35,23 +51,7 @@ export function findMostPlayedArtist(events) {
     : null;
 }
 
-export function calculateListeningTimeBySong(events) {
-  if (!events || events.length === 0) return null;
-
-  let songTime = {};
-
-  events.forEach((event) => {
-    const song = getSong(event.song_id);
-    if (song) {
-      const songKey = `${song.artist} - ${song.title}`;
-      songTime[songKey] = (songTime[songKey] || 0) + song.duration_seconds;
-    }
-  });
-
-  return songTime;
-}
-
-export function calculateListeningTimeByArtist(events) {
+export function findMostPlayedArtistTime(events) {
   if (!events || events.length === 0) return null;
 
   let artistTime = {};
@@ -67,7 +67,7 @@ export function calculateListeningTimeByArtist(events) {
   return artistTime;
 }
 
-export function findFridayNightSongs(events) {
+export function findFridayNightSong(events) {
   if (!events || events.length === 0) return null;
 
   let songCounts = {};
@@ -91,7 +91,7 @@ export function findFridayNightSongs(events) {
     : null;
 }
 
-export function calculateFridayNightListeningTime(events) {
+export function findFridayNightSongTime(events) {
   if (!events || events.length === 0) return null;
 
   let songTime = {};
